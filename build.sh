@@ -47,7 +47,7 @@ cat << 'EOF' > "${CONTENTS_DIR}/Info.plist"
     <key>CFBundleVersion</key>
     <string>11</string>
     <key>LSMinimumSystemVersion</key>
-    <string>14.0</string>
+    <string>13.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSPrincipalClass</key>
@@ -92,8 +92,8 @@ if [ -z "${SWIFT_SDK:-}" ]; then
         SWIFT_SDK="$CLT_SWIFTUI_SDK"
     fi
 fi
-swiftc -sdk "$SWIFT_SDK" -O -parse-as-library -target arm64-apple-macosx14.0 AirCardApp.swift Sources/WalletDiscovery.swift Sources/WalletDiagnosticsView.swift -o build/AirCard_arm64
-swiftc -sdk "$SWIFT_SDK" -O -parse-as-library -target x86_64-apple-macosx14.0 AirCardApp.swift Sources/WalletDiscovery.swift Sources/WalletDiagnosticsView.swift -o build/AirCard_x86_64
+swiftc -sdk "$SWIFT_SDK" -O -parse-as-library -target arm64-apple-macosx13.0 AirCardApp.swift Sources/WalletDiscovery.swift Sources/WalletDiagnosticsView.swift -o build/AirCard_arm64
+swiftc -sdk "$SWIFT_SDK" -O -parse-as-library -target x86_64-apple-macosx13.0 AirCardApp.swift Sources/WalletDiscovery.swift Sources/WalletDiagnosticsView.swift -o build/AirCard_x86_64
 lipo -create -output "${MACOS_DIR}/AirCard" build/AirCard_arm64 build/AirCard_x86_64
 chmod +x "${MACOS_DIR}/AirCard"
 
@@ -135,8 +135,8 @@ fi
 for binary in "${MACOS_DIR}/${APP_NAME}" "${BIN_DIR}"/*; do
     [ -f "$binary" ] || continue
     actual="$(otool -l "$binary" | awk '/minos/ {print $2; exit}')"
-    if [ -n "$actual" ] && [ "$actual" != "14.0" ]; then
-        echo "ERROR: $(basename "$binary") targets macOS $actual, but the app claims 14.0" >&2
+    if [ -n "$actual" ] && [ "$actual" != "13.0" ]; then
+        echo "ERROR: $(basename "$binary") targets macOS $actual, but the app claims 13.0" >&2
         exit 1
     fi
 done

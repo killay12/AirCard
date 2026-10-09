@@ -819,10 +819,16 @@ class AppViewModel: ObservableObject {
                 guard self.catalogRequestID == requestID, self.activeCardDeviceID == udid else { return }
                 self.walletCatalog = result
                 self.isReadingWalletCache = false
-                for index in self.cards.indices {
-                    let name = result.name(for: self.cards[index].id)
-                    if self.cards[index].displayName != name { self.cards[index].displayName = name }
+                var updatedCards = self.cards
+                var cardsChanged = false
+                for index in updatedCards.indices {
+                    let name = result.name(for: updatedCards[index].id)
+                    if updatedCards[index].displayName != name {
+                        updatedCards[index].displayName = name
+                        cardsChanged = true
+                    }
                 }
+                if cardsChanged { self.cards = updatedCards }
                 if self.isScanningCards {
                     self.reconcilePendingPaymentActivations()
                     self.reconcileMatchedPaymentCards()
@@ -2336,7 +2342,7 @@ struct ContentView: View {
                 }
             }
         }
-        .onChange(of: vm.selectedTab) { _, newTab in
+        .onChange(of: vm.selectedTab) { newTab in
             if newTab == .passcodeThemes && vm.isScanningCards {
                 vm.stopCardScanning()
             }
@@ -3097,7 +3103,7 @@ struct ContentView: View {
                         Text("Circle Buttons").tag(true)
                     }
                     .pickerStyle(.segmented)
-                    .onChange(of: vm.creatorMaskToCircles) { _, _ in
+                    .onChange(of: vm.creatorMaskToCircles) { _ in
                         vm.updatePosterSlicing()
                     }
                     
@@ -3140,7 +3146,7 @@ struct ContentView: View {
                         Slider(value: $vm.creatorPosterZoom, in: 0.5...3.0, step: 0.05) {
                             Text("Zoom")
                         }
-                        .onChange(of: vm.creatorPosterZoom) { _, _ in
+                        .onChange(of: vm.creatorPosterZoom) { _ in
                             vm.updatePosterSlicing()
                         }
                         .disabled(vm.creatorPosterImage == nil)
@@ -3684,7 +3690,7 @@ struct ContentView: View {
                     .padding(.vertical, 4)
                 }
                 .frame(height: 90)
-                .onChange(of: vm.logs.count) { _, _ in
+                .onChange(of: vm.logs.count) { _ in
                     if let last = vm.logs.indices.last {
                         proxy.scrollTo(last, anchor: .bottom)
                     }
